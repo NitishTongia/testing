@@ -1,4 +1,3 @@
-
 #include "../include/Elevator.h"
 #include <cassert>
 #include <iostream>

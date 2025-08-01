@@ -116,7 +116,9 @@ private:
     std::vector<Request> requests; ///< Pending requests
     EventCallback eventCallback; ///< Event callback
     std::string logFile; ///< Log file path
+    std::vector<std::pair<int, Direction>> plannedRoute; ///< Sequence of (floor, direction) pairs to visit
+    Direction plannedDirection = Direction::Idle; ///< Planned direction, only updated when new request is added
     void log(const std::string& message) const;
-    void updateDirection();
+    void planRoute();
     void emitEvent(const std::string& event);
 };

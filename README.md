@@ -9,6 +9,8 @@ A C++ implementation of an extensible, maintainable, and flexible elevator logic
 
 
 ## Design Overview
+- **Optimal Route Planning**: Elevator plans a complete route for all current requests, only picks up users if the next movement matches their requested direction, and replans after each fulfillment or new request.
+- **Real-World Fulfillment**: Requests are only fulfilled if the elevator actually moves in the requested direction after pickup, including reversal at terminal floors.
 - **Elevator**: Manages elevator state, movement, requests, and supports emergency/maintenance modes.
 - **Request**: Represents a floor request (with direction, priority, timestamp, and user ID).
 - **Event Hooks**: Allows external code to react to elevator events (arrivals, emergencies, etc.).
@@ -19,6 +21,37 @@ A C++ implementation of an extensible, maintainable, and flexible elevator logic
 
 
 ## Usage Example
+## Real-World Scenario Example
+Here's a simulation of multiple requests with up/down directions:
+
+```cpp
+#include "include/Elevator.h"
+#include <iostream>
+
+int main() {
+    Elevator elevator(10); // 10-story building, starts at floor 4
+    elevator.setEventCallback([](const std::string& event, int floor) {
+        std::cout << "Event: " << event << " at floor " << floor << std::endl;
+    });
+    // Set starting floor to 4
+    while (elevator.getCurrentFloor() < 4) {
+        elevator.addRequest(Request(elevator.getCurrentFloor() + 1, Direction::Up));
+        elevator.step(0);
+    }
+    // Add requests
+    elevator.addRequest(Request(3, Direction::Up, 1, "userA"));
+    elevator.addRequest(Request(1, Direction::Down, 1, "userB"));
+    elevator.addRequest(Request(9, Direction::Down, 1, "userC"));
+    elevator.addRequest(Request(7, Direction::Down, 1, "userD"));
+    // Simulate elevator movement
+    while (!elevator.isIdle()) {
+        elevator.step(0);
+    }
+    return 0;
+}
+```
+
+This will fulfill requests in the correct order and direction, matching real-world elevator logic.
 Here's a simple example of using the Elevator API:
 
 ```cpp
@@ -50,6 +83,7 @@ c++ -std=c++17 -Iinclude src/Elevator.cpp tests/test_elevator.cpp -o elevator_te
 ```
 
 ## Test Suite
+- Real-world scenario: up/down requests, optimal route, reversal at terminal floors
 The test suite covers:
 - Basic movement and request handling
 - Error handling and edge cases
@@ -64,15 +98,6 @@ If all tests pass, the implementation is correct and robust. If any test fails, 
 - Event hooks allow integration with UIs or monitoring systems
 - Error codes and state management for reliability
 - Easily add new request types or elevator features
-
-## Contributing
-Contributions are welcome! Please fork the repository, create a feature branch, and submit a pull request. For major changes, open an issue first to discuss your ideas.
-
-## License
-This project is licensed under the MIT License.
-
-## Contact
-For questions or feedback, contact Nitish Tongia or open an issue on GitHub.
 
 ## Troubleshooting & FAQ
 - **Compilation errors**: Ensure you are using C++17 or newer and all required headers are included.
